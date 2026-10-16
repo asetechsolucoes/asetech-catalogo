@@ -74,7 +74,8 @@ def urls_das_vitrines(urls):
 
 def ler_produto(url):
     try:
-        s = baixar(url)
+        # parâmetro aleatório evita a página em cache (preço antigo)
+        s = baixar(f"{url}?nc={time.time_ns()}")
     except Exception:
         return None
     i = s.find("dataLayer = [")
