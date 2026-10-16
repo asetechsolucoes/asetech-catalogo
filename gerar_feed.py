@@ -11,6 +11,7 @@ import html
 import json
 import re
 import sys
+import time
 import urllib.request
 from xml.sax.saxutils import escape
 
@@ -55,6 +56,20 @@ def baixar(url):
 def urls_do_sitemap():
     xml = baixar(SITEMAP)
     return [u for u in re.findall(r"<loc>([^<]+)</loc>", xml)]
+
+
+def urls_das_vitrines(urls):
+    """Links da home e das categorias principais: pegam produtos novos antes de entrarem no sitemap."""
+    vitrines = [LOJA + "/"] + [u for u in urls if u.replace(LOJA, "").strip("/").count("/") == 0]
+    links = set()
+    for v in vitrines:
+        try:
+            # parâmetro aleatório evita a versão em cache da vitrine
+            html_vitrine = baixar(f"{v}?nc={time.time_ns()}")
+            links.update(re.findall(r'href="(' + re.escape(LOJA) + r'/[^"#?]+/[^"#?]+)"', html_vitrine))
+        except Exception:
+            pass
+    return links
 
 
 def ler_produto(url):
@@ -170,6 +185,7 @@ def item_xml(d):
 def main():
     saida = sys.argv[1] if len(sys.argv) > 1 else "feed/produtos.xml"
     urls = urls_do_sitemap()
+    urls = urls + sorted(urls_das_vitrines(urls) - set(urls))
     with concurrent.futures.ThreadPoolExecutor(max_workers=8) as ex:
         produtos = [p for p in ex.map(ler_produto, urls) if p]
     vistos, itens = set(), []
