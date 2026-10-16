@@ -33,7 +33,7 @@ CERTIFICADO = re.compile(r"certificado|e-?cnpj|e-?cpf", re.I)
 LINHAS = [
     ("certificado", CERTIFICADO),
     ("combo", re.compile(r"(365|office|windows).*(kaspersky|norton|mcafee)|(kaspersky|norton|mcafee).*(365|office)", re.I)),
-    ("antivirus", re.compile(r"kaspersky|norton|mcafee|bitdefender|eset|antiv[ií]rus|edr", re.I)),
+    ("antivirus", re.compile(r"kaspersky|norton|mcafee|bitdefender|eset|antiv[ií]rus|\bedr\b", re.I)),
     ("servidor", re.compile(r"server|sql|\bcal\b|power bi|power automate|windows 365|e3|e5", re.I)),
     ("m365", re.compile(r"365|onedrive|teams|exchange|intune", re.I)),
     ("office", re.compile(r"office|visio|project", re.I)),
